@@ -107,15 +107,6 @@ router.post('/signUp', async function (req, res, next) {
         res.status(500);
         res.json({code: 2, message: "internal error"});
     }
-    // res.send('Got a POST request');
 });
-
-router.put('/', function (req, res) {
-    res.send('Got a PUT request at /users');
-});
-
-router.delete('/', function (req, res) {
-    res.send('Got a DELETE request at /users')
-})
 
 module.exports = router;

@@ -12,5 +12,5 @@ exports.getDbPool = () => {
         ssl: {
             rejectUnauthorized: false
         }
-    })
+    });
 };

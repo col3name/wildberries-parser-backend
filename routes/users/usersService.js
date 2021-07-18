@@ -1,6 +1,5 @@
 module.exports = {
     authenticate,
-    getAll
 };
 
 const Cryptr = require('cryptr');
@@ -27,11 +26,4 @@ async function authenticate({username, password}) {
        console.log(e);
        return  false;
    }
-}
-
-async function getAll() {
-    return users.map(u => {
-        const {password, ...userWithoutPassword} = u;
-        return userWithoutPassword;
-    });
 }
