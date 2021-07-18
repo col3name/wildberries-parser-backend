@@ -116,17 +116,25 @@ let currentPage = 0;
 async function searchProductsOnWildberries(searchString) {
     let productsElement = document.getElementById('products');
     try {
-        localStorage.clear();
+        localStorage.removeItem('searchTitle')
+        localStorage.removeItem('allParameterNames');
+        localStorage.removeItem('productsResult');
+
         productsElement.innerHTML = "Идет поиск...";
         let response = await doGet(`/api/search?search=${searchString}`);
         // console.log(response.data);
-
+        const searchTitleElement = document.getElementById('searchTitle');
+        searchTitleElement.classList.remove('hide');
+        searchTitleElement.innerText = `Результаты поиск «${searchString}»`;
         let products = response.data;
+
         drawSearchResults(products, response.paramNames);
+
         // let value = JSON.stringify(response.data);
         let value = JSON.stringify(products);
         const byteAmount = unescape(encodeURIComponent(value)).length
         console.log(byteAmount);
+        localStorage.setItem('searchTitle', searchString)
         localStorage.setItem('allParameterNames', response.paramNames);
         localStorage.setItem('productsResult', value);
         return true;
@@ -136,6 +144,7 @@ async function searchProductsOnWildberries(searchString) {
         return false;
     }
 }
+
 function getBinarySize(string) {
     return Buffer.byteLength(string, 'utf8');
 }
@@ -237,12 +246,17 @@ async function main() {
     let productsElement = document.getElementById('products');
     const productsResult = localStorage.getItem('productsResult');
     const allParameterNames = localStorage.getItem('allParameterNames');
+    const searchTitle = localStorage.getItem('searchTitle');
+    const searchTitleElement = document.getElementById('searchTitle');
     console.log(productsResult);
     console.log(allParameterNames);
-    if (productsResult !== null && productsResult !== undefined && allParameterNames !== null && allParameterNames !== undefined) {
+    if (searchTitle !== null && productsResult !== null && productsResult !== undefined && allParameterNames !== null && allParameterNames !== undefined) {
         // console.log(JSON.parse(productsResult));
         searchFormElement.classList.add('hide');
+        searchTitleElement.classList.add('hide');
         newSearchButton.classList.remove('hide');
+        searchTitleElement.classList.remove('hide');
+        searchTitleElement.innerText = `Результаты поиск «${searchTitle}»`;
         drawSearchResults(JSON.parse(productsResult), allParameterNames.split(','));
     }
 
@@ -260,6 +274,7 @@ async function main() {
         e.preventDefault();
         searchFormElement.classList.remove('hide');
         searchInputElement.value = '';
+        searchTitleElement.classList.add('hide');
         newSearchButton.classList.add('hide');
         productsElement.innerHTML = "";
     });
@@ -323,7 +338,8 @@ async function doGet(path) {
     const response = await fetch(`${BASE_URL}${path}`);
     return await response.json();
 }
-(async  function () {
+
+(async function () {
     await main();
 }());
 //

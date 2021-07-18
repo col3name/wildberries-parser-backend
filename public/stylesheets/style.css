@@ -24,6 +24,11 @@ a {
   cursor: pointer;
 }
 
+.scrolling-wrapper {
+  display: block;
+  overflow-x: auto;
+}
+
 .table-header {
   background-color: #5d5fe7;
   color: #ffffff;
@@ -47,6 +52,7 @@ a {
   vertical-align: middle;
   overflow-wrap: break-word;
   font-size: 12px;
+  text-transform: capitalize;
 }
 
 th {
@@ -70,4 +76,11 @@ th {
   color: #ffffff;
   border-radius: 17px;
   background-color: #5d5fef;
+  text-transform: uppercase;
+}
+
+.btn-new-search {
+  padding: 0.85rem 5rem;
+  display: block;
+  margin: 80px auto 0;
 }
