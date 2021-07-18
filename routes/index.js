@@ -2,6 +2,8 @@ let express = require('express');
 let router = express.Router();
 const axios = require('axios').default;
 const cheerio = require('cheerio');
+const pool = require('config');
+// config.db
 // const mariadb = require('mariadb');
 //
 // const pool = mariadb.createPool({
@@ -11,9 +13,7 @@ const cheerio = require('cheerio');
 //     database: process.env.DB_NAME,
 //     connectionLimit: 8
 // });
-const env = process.env;
 
-const pg = require('pg');
 
 // const pool = new Pool({
 //     // host: 'localhost',
@@ -27,7 +27,6 @@ const pg = require('pg');
 //     password: env.DB_PASSWORD || 'postgres',
 //     database: env.DB_NAME || 'wildberries',
 // });
-pg.defaults.ssl = true;
 // const client = new pg.Client({
 //     host: env.DB_HOST || 'localhost',
 //     port: env.DB_PORT || '5432',
@@ -38,16 +37,18 @@ pg.defaults.ssl = true;
 //         rejectUnauthorized: false
 //     }
 // });
-const pool = new pg.Pool({
-    host: env.DB_HOST || 'localhost',
-    port: env.DB_PORT || '5432',
-    user: env.DB_USER || 'postgres',
-    password: env.DB_PASSWORD || 'postgres',
-    database: env.DB_NAME || 'wildberries',
-    ssl: {
-        rejectUnauthorized: false
-    }
-});
+// const db = {
+//     host: env.DB_HOST || 'localhost',
+//     port: env.DB_PORT || '5432',
+//     user: env.DB_USER || 'postgres',
+//     password: env.DB_PASSWORD || 'postgres',
+//     database: env.DB_NAME || 'wildberries',
+//     ssl: {
+//         rejectUnauthorized: false
+//     }
+// };
+// pg.defaults.ssl = true;
+// const pool = new pg.Pool(db);
 router.get('/', function (req, res, next) {
     res.render('index', {title: 'Express'});
 });
@@ -138,7 +139,7 @@ router.get('/api/search', async function (req, res) {
                     console.log(err);
                     res.status(409)
                 } finally {
-                    client.end();
+                    // client.end();
                 }
             } catch (err) {
                 console.log('pool');
