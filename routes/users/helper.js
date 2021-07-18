@@ -3,7 +3,9 @@ const userService = require('../users/usersService');
 exports.basicAuth = async function basicAuth(req, res, next) {
     // make authenticate path public
     console.log(req.path);
-    if (req.path === "/api/users/signUp" || req.path === "/api/users/signIn") {
+    if (req.path.includes('.js') || req.path.includes('.png') || req.path.includes('.css') || req.path.includes('.jpeg')
+        || req.path.includes('.jpg')
+        || req.path === "/" || req.path === "/api/users/signUp" || req.path === "/api/users/signIn") {
         console.log('next');
         return next();
     }
