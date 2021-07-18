@@ -112,7 +112,7 @@ async function searchOnCatalog(searchString, limit = 5) {
         // https://www.wildberries.ru/search/exactmatch/common?query=%D1%80%D1%8E%D0%BA%D0%B7%D0%B0%D0%BA+%D0%BB%D0%B8%D1%81%D1%8B+%D0%BA%D0%B0%D0%BA%D1%82%D1%83%D1%81
         const commonUrl = 'https://wbxsearch.wildberries.ru/exactmatch/v2/common?query=' + searchStringEncoded;
         const commonData = await doGetJson(commonUrl);
-        console.log(commonData);
+        // console.log(commonData);
         let query = 'https://wbxcatalog-ru.wildberries.ru/';
         if (commonData.hasOwnProperty('shardKey') && commonData.hasOwnProperty('query') &&commonData.hasOwnProperty('filters')) {
             query += commonData.shardKey + `/catalog?spp=0&pricemarginCoeff=1.0&reg=0&appType=1&offlineBonus=0&onlineBonus=0&emp=0&locale=ru&lang=ru&curr=rub&count=10&maxPage=10&search=${searchStringEncoded}&${commonData.query}&?xfilters=${encodeURIComponent(commonData.filters)}`;

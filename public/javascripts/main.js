@@ -4,7 +4,7 @@ const RESPONSE_OK = 0;
 const BASE_URL = 'https://wildberries-catalog.herokuapp.com';
 // const BASE_URL = 'http://localhost:3000';
 
-function drawProducts(products, allParameterNames) {
+function drawSearchResults(products, allParameterNames) {
     let allParameters = new Map();
 
     console.log(allParameterNames);
@@ -13,15 +13,15 @@ function drawProducts(products, allParameterNames) {
     let productsElement = document.getElementById('products');
     productsElement.innerHTML = "";
 
-    let html = '<th></th><th>URL</th><th>price</th>';
+    let html = '<th class="table-cell table-header"></th><th class="table-cell table-header">URL</th><th class="table-cell table-header">Цена</th>';
 
     for (let name of allParameterNames) {
-        html += `<th>${name}</th>`;
+        html += `<th class="table-cell table-header">${name}</th>`;
         allParameters.set(name, i);
         i++;
     }
-    console.log(productsElement);
-    console.log(html);
+    // console.log(productsElement);
+    // console.log(html);
     let tableHeadRow = document.createElement('tr');
     tableHeadRow.innerHTML = html;
     productsElement.appendChild(tableHeadRow);
@@ -37,8 +37,10 @@ function drawProducts(products, allParameterNames) {
             keywords.value.split(';').forEach(keyword => {
                 const key = keyword.toLowerCase().trim();
                 let keyValue = keywordMap.get(key);
+                // console.log('keyValue');
+                // console.log(keyValue);
                 if (keyValue === undefined) {
-                    keyValue = 0;
+                    keyValue = 1;
                 } else {
                     keyValue++;
                 }
@@ -68,25 +70,37 @@ function drawProducts(products, allParameterNames) {
         let innerHTML = ``;
         let i = 0;
         for (let cellValue of row) {
-            if (i > 2) {
-                innerHTML += `<td>`;
+            if (cellValue === '-') {
+                innerHTML += `<td class="table-cell keyword-empty">${cellValue}</td>`;
+            } else if (i === 2) {
+                innerHTML += `<td class="table-cell">${cellValue / 100}</td>`;
+            } else if (i > 2) {
+                innerHTML += `<td class="table-cell">`;
                 let keywords = cellValue.split(';');
                 let j = 0;
                 for (let keyword of keywords) {
                     const key = keyword.toLowerCase().trim();
                     let count = keywordMap.get(key);
+                    console.log('count');
+                    // console.log(key);
+                    // console.log(count);
                     if (count === undefined || count <= 1 || (count > 1 && keyword.includes(' шт.'))) {
-                        innerHTML += `<span>${key}</span>`;
+                        innerHTML += `<span class="keyword" >${key}</span>`;
                     } else if (count > 1) {
-                        innerHTML += `<span class="keyword" style="color: #FF9703B5">${key}</span>`;
+                        innerHTML += `<span class="keyword keyword-duplicated" >${key}</span>`;
                     }
                     if (keywords.length > 1 && j < keywords.length) {
                         innerHTML += '; ';
                     }
                     j++;
                 }
+                innerHTML += `</td>`;
             } else {
-                innerHTML += `<td>${cellValue}</td>`;
+                if (i < 1) {
+                    innerHTML += `<td class="table-cell table-header">${cellValue}</td>`;
+                } else {
+                    innerHTML += `<td class="table-cell"><a href="${cellValue}" target="_blank"><span style="color: #000000;">${cellValue}</span></a></td>`;
+                }
             }
             i++;
         }
@@ -108,7 +122,7 @@ async function handlePagination(EVENTS_CHANNEL, page = 0, limit = 10) {
         ) {
             EventBus.publish(EVENTS_CHANNEL, "invalid response");
         } else {
-            drawProducts(response.data, []);
+            drawSearchResults(response.data, []);
             return response.countPage;
         }
     } catch (err) {
@@ -123,11 +137,14 @@ async function handlePagination(EVENTS_CHANNEL, page = 0, limit = 10) {
 let currentPage = 0;
 
 async function searchProductsOnWildberries(searchString) {
+    let productsElement = document.getElementById('products');
     try {
+        productsElement.innerHTML = "Идет поиск...";
         let response = await doGet(`/api/search?search=${searchString}`);
         console.log(response.data);
-        drawProducts(response.data, response.paramNames);
+        drawSearchResults(response.data, response.paramNames);
     } catch (err) {
+        productsElement.innerHTML = "Ничего не найдено...";
         console.log(err);
     }
 }
@@ -145,12 +162,12 @@ async function main() {
     });
 
     const currentLocation = document.location.href;
-    console.log("curr" +currentLocation);
+    console.log("curr" + currentLocation);
 
     let includes = currentLocation.includes(BASE_URL + '/search?search=');
     console.log(includes);
     if (includes) {
-       await searchProductsOnWildberries(currentLocation.substr((BASE_URL + '/search?search=').length));
+        await searchProductsOnWildberries(currentLocation.substr((BASE_URL + '/search?search=').length));
     }
 
     let signUpElement = document.getElementById('signUp');
@@ -189,6 +206,7 @@ async function main() {
 
     submitUserFormButton.addEventListener('click', async (e) => {
         e.preventDefault();
+
         let usernameInput = document.getElementById('usernameInput');
         let passwordInput = document.getElementById('passwordInput');
         const username = usernameInput.value
@@ -221,39 +239,12 @@ async function main() {
         }
     })
 
-    // const countItems = await handlePagination(EVENTS_CHANNEL);
-    // const maxPage = countItems / 10 - 1;
-
-    // let previousPageButton = document.getElementById('prevPage');
-    // let currentPageElement = document.getElementById('currentPage');
-    // let nextPageElement = document.getElementById('nextPage');
-
-    // nextPageElement.addEventListener('click', async () => {
-    //     if (currentPage < maxPage) {
-    //         nextPageElement.classList.remove('disabled');
-    //         currentPage++;
-    //         let newVar = await handlePagination(EVENTS_CHANNEL, currentPage);
-    //         currentPageElement.innerText = `${currentPage} all pages ${maxPage}`;
-    //     } else {
-    //         nextPageElement.classList.add('disabled');
-    //     }
-    // });
-    //
-    // previousPageButton.addEventListener('click', async () => {
-    //     if (currentPage > 0) {
-    //         previousPageButton.classList.remove('disabled');
-    //         currentPage--;
-    //         let newVar = await handlePagination(EVENTS_CHANNEL, currentPage);
-    //         currentPageElement.innerText = `${currentPage} all pages ${maxPage}`;
-    //     } else {
-    //         previousPageButton.classList.add('disabled');
-    //     }
-    // });
-
     let searchFormElement = document.getElementById('searchForm');
     let searchInputElement = document.getElementById('searchInput');
     searchFormElement.addEventListener('submit', async (e) => {
         e.preventDefault();
+        let productsElement = document.getElementById('products');
+        productsElement.innerHTML = "";
         let searchString = searchInputElement.value;
         await searchProductsOnWildberries(searchString);
     });

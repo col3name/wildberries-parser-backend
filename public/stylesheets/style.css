@@ -23,3 +23,24 @@ a {
 .button:hover {
   cursor: pointer;
 }
+
+.table-header {
+  background-color: #5d5fe7;
+  color: #ffffff;
+}
+
+.keyword-duplicated {
+  color: #e27a2f;
+}
+
+.keyword-empty {
+  background-color: #d5d5d5;
+  color: #282828;
+}
+
+.table-cell {
+  border: 1px solid #a6a6a6;
+  padding: 4px;
+  text-align: center;
+  vertical-align: center;
+}
