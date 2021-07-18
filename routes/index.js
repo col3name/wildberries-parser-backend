@@ -24,7 +24,6 @@ async function measure(fn) {
 }
 
 router.get('/api/search', async function (req, res) {
-    // await measure(async () => {
     let httpStatus = 200;
     let code = 0;
     if (!req.query.hasOwnProperty('search')) {
@@ -102,56 +101,31 @@ router.get('/api/search', async function (req, res) {
                 console.log(err);
                 res.status(409)
             }
-            // console.log(sql);
-            // console.log(data);
-            // try {
-            //     const connection = await pool.getConnection();
-            //     const rows = await connection.query("SELECT 1 as val");
-            //     console.log(rows);
-            //     try {
-            //         const result = await connection.query(sql, data);
-            //         console.log(result);
-            //         // res.json({ code: code, data: result, message: 'success' });
-            //         await connection.end();
-            //         res.json({
-            //             "code": code,
-            //             "data": products,
-            //             "paramNames": Array.from(paramNames),
-            //             "message": "ok"
-            //         });
-            //     } catch (err) {
-            //         if (connection) {
-            //             await connection.end();
-            //         }
-            //         console.log(err);
-            //         res.status(409)
-            //         throw err;
-            //     }
-            // } catch (err) {
-            //     console.log(err);
-            //     res.status(409)
-            //     throw err;
-            // }
         }
     }
-    // });
 });
 
 async function searchOnCatalog(searchString, limit = 5) {
     try {
         const searchStringEncoded = encodeURIComponent(searchString);
+        // https://www.wildberries.ru/search/exactmatch/common?query=%D1%80%D1%8E%D0%BA%D0%B7%D0%B0%D0%BA+%D0%BB%D0%B8%D1%81%D1%8B+%D0%BA%D0%B0%D0%BA%D1%82%D1%83%D1%81
         const commonUrl = 'https://wbxsearch.wildberries.ru/exactmatch/v2/common?query=' + searchStringEncoded;
         const commonData = await doGetJson(commonUrl);
         console.log(commonData);
         let query = 'https://wbxcatalog-ru.wildberries.ru/';
-        if (commonData.hasOwnProperty('shardKey') && commonData.hasOwnProperty('query') && commonData.hasOwnProperty('filters')) {
+        if (commonData.hasOwnProperty('shardKey') && commonData.hasOwnProperty('query') &&commonData.hasOwnProperty('filters')) {
             query += commonData.shardKey + `/catalog?spp=0&pricemarginCoeff=1.0&reg=0&appType=1&offlineBonus=0&onlineBonus=0&emp=0&locale=ru&lang=ru&curr=rub&count=10&maxPage=10&search=${searchStringEncoded}&${commonData.query}&?xfilters=${encodeURIComponent(commonData.filters)}`;
             // console.log(query);
             let data = await doGetJson(query);
             return data.data.products.slice(0, limit);
         } else {
             return null;
+            // query += commonData.shardKey + `/catalog?spp=0&pricemarginCoeff=1.0&reg=0&appType=1&offlineBonus=0&onlineBonus=0&emp=0&locale=ru&lang=ru&curr=rub&count=10&maxPage=10&search=${searchStringEncoded}&${commonData.query}&?xfilters=${encodeURIComponent(commonData.filters)}`;
+            // // console.log(query);
+            // let data = await doGetJson(query);
+            // return data.data.products.slice(0, limit);
         }
+        // https://www.wildberries.ru/search/extsearch/catalog?spp=0&regions=64,79,4,38,30,33,70,1,22,31,66,80,69,48,40,68&stores=119261,122252,122256,121631,122466,122467,122495,122496,122498,122590,122591,122592,123816,123817,123818,123820,123821,123822,124093,124094,124095,124096,124097,124098,124099,124100,124101,124583,124584,117986,1733,116433,120762,119400,117501,507,3158,2737,1699,686,1193,117413,119781&pricemarginCoeff=1.0&reg=0&appType=1&offlineBonus=0&onlineBonus=0&emp=0&locale=ru&lang=ru&curr=rub&couponsGeo=2,12,6,7,3,18,21&search=%D1%80%D1%8E%D0%BA%D0%B7%D0%B0%D0%BA%20%D0%BB%D0%B8%D1%81%D1%8B%20%D0%BA%D0%B0%D0%BA%D1%82%D1%83%D1%81&xparams=search%3D%D1%80%D1%8E%D0%BA%D0%B7%D0%B0%D0%BA+%D0%BB%D0%B8%D1%81%D1%8B+%D0%BA%D0%B0%D0%BA%D1%82%D1%83%D1%81&xshard=&search=%D1%80%D1%8E%D0%BA%D0%B7%D0%B0%D0%BA+%D0%BB%D0%B8%D1%81%D1%8B+%D0%BA%D0%B0%D0%BA%D1%82%D1%83%D1%81&sort=popular
     } catch
         (e) {
         console.log(e);

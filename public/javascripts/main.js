@@ -38,7 +38,7 @@ function drawProducts(products, allParameterNames) {
                 const key = keyword.toLowerCase().trim();
                 let keyValue = keywordMap.get(key);
                 if (keyValue === undefined) {
-                    keyValue = 1;
+                    keyValue = 0;
                 } else {
                     keyValue++;
                 }
@@ -64,7 +64,6 @@ function drawProducts(products, allParameterNames) {
         table.push(row);
     });
 
-    console.log();
     table.forEach(row => {
         let innerHTML = ``;
         let i = 0;
