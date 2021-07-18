@@ -14,7 +14,6 @@ const pool = require('config');
 //     connectionLimit: 8
 // });
 
-
 // const pool = new Pool({
 //     // host: 'localhost',
 //     // user: 'postgres',
