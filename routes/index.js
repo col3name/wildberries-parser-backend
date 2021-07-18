@@ -38,6 +38,7 @@ const client = new pg.Client({
         rejectUnauthorized: false
     }
 });
+await client.connect();
 
 router.get('/', function (req, res, next) {
     res.render('index', {title: 'Express'});
@@ -115,7 +116,6 @@ router.get('/api/search', async function (req, res) {
             console.log(data);
 
             try {
-                await client.connect();
                 try {
                     const result = await client.query(sql, data);
                     console.log(result.rows[0]);
