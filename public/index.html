@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta
+            name="viewport"
+            content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <title>Document</title>
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/css/foundation.min.css"
+            integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I="
+            crossorigin="anonymous"
+    />
+
+    <!-- Compressed JavaScript -->
+    <!-- <script
+      src="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/js/foundation.min.js"
+      integrity="sha256-pRF3zifJRA9jXGv++b06qwtSqX1byFQOLjqa2PTEb2o="
+      crossorigin="anonymous"
+    ></script> -->
+    <!--    <link href="stylesheets/style.css" type="text/css"/>-->
+</head>
+<body>
+<div id="username"></div>
+<div>
+    <button id="logoutBtn" class="button">logout</button>
+    <button id="signUp" class="button">signUp</button>
+    <button id="signIn" class="button">signIn</button>
+    <form id="userForm" class="hide">
+        <span id="action"></span>
+        <label for="usernameInput"></label><input
+            id="usernameInput"
+            type="text"
+            placeholder="username"
+            autocomplete="off"
+    />
+        <label for="passwordInput"></label><input
+            id="passwordInput"
+            type="password"
+            placeholder="password"
+            autocomplete="off"
+    />
+        <button id="submitUserForm" type="submit">Submit</button>
+    </form>
+</div>
+<div id="alert" class="hide"></div>
+<form id="searchForm">
+    <label for="searchInput"
+    ><input id="searchInput" type="text" placeholder="Search"
+    /></label>
+    <button id="submit" class="button">submit</button>
+</form>
+<!--    <div>-->
+<!--      <button id="prevPage" class="button">prev</button>-->
+<!--      <button id="nextPage" class="button">next</button>-->
+<!--      <span id="currentPage">0</span>-->
+<!--    </div>-->
+
+<table id="products"></table>
+<label for="clipboard" style="opacity: 0"
+><input id="clipboard" type="text" placeholder="clipboard"
+/></label>
+<script src="javascripts/helper/util.js"></script>
+<script src="javascripts/helper/eventBus.js"></script>
+<script src="javascripts/main.js"></script>
+<script>
+    // document.foundation();
+</script>
+</body>
+</html>
