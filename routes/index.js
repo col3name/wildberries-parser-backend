@@ -13,7 +13,7 @@ const cheerio = require('cheerio');
 // });
 const env = process.env;
 
-const {Client } = require('pg');
+const pg = require('pg');
 
 // const pool = new Pool({
 //     // host: 'localhost',
@@ -27,7 +27,8 @@ const {Client } = require('pg');
 //     password: env.DB_PASSWORD || 'postgres',
 //     database: env.DB_NAME || 'wildberries',
 // });
-const client = new Client({
+pg.defaults.ssl = true;
+const client = new pg.Client({
     host: env.DB_HOST || 'localhost',
     port: env.DB_PORT || '5432',
     user: env.DB_USER || 'postgres',
