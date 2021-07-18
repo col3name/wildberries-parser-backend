@@ -34,6 +34,9 @@ const client = new pg.Client({
     user: env.DB_USER || 'postgres',
     password: env.DB_PASSWORD || 'postgres',
     database: env.DB_NAME || 'wildberries',
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
 router.get('/', function (req, res, next) {
