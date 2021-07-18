@@ -6,7 +6,7 @@ const Cryptr = require('cryptr');
 const crypt = new Cryptr("qwerty");
 const config = require('../../config');
 const pool = config.getDbPool();
-const utils = require('../../utils/utils');
+const utils = require('utils/utils');
 
 async function authenticate({username, password}) {
    try {
