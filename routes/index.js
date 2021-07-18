@@ -23,7 +23,7 @@ async function measure(fn) {
     console.log('hour: ' + time / 1000 / 60 / 60);
 }
 
-router.get('/api/search', async function (req, res) {
+router.get('/search', async function (req, res) {
     let httpStatus = 200;
     let code = 0;
     if (!req.query.hasOwnProperty('search')) {
@@ -81,24 +81,19 @@ router.get('/api/search', async function (req, res) {
             console.log(data);
 
             try {
-                try {
-                    const result = await pool.query(sql, data);
-                    console.log(result.rows[0]);
-                    res.json({
-                        "code": code,
-                        "data": products,
-                        "paramNames": Array.from(paramNames),
-                        "message": "ok"
-                    });
-                } catch (err) {
-                    console.log('sql');
-                    console.log(err);
-                    res.status(409)
-                } finally {
-                    // client.end();
-                }
+                const result = await pool.query(sql, data);
+                console.log(result.rows[0]);
+                res.json({
+                    "code": code,
+                    "data": products,
+                    "paramNames": Array.from(paramNames),
+                    "message": "ok"
+                });
             } catch (err) {
-                console.log('pool');
+                setTimeout(function () {
+                    pool.connect();
+                }, 10000);
+                console.log('sql');
                 console.log(err);
                 res.status(409)
             }
@@ -114,7 +109,7 @@ async function searchOnCatalog(searchString, limit = 5) {
         const commonData = await doGetJson(commonUrl);
         // console.log(commonData);
         let query = 'https://wbxcatalog-ru.wildberries.ru/';
-        if (commonData.hasOwnProperty('shardKey') && commonData.hasOwnProperty('query') &&commonData.hasOwnProperty('filters')) {
+        if (commonData.hasOwnProperty('shardKey') && commonData.hasOwnProperty('query') && commonData.hasOwnProperty('filters')) {
             query += commonData.shardKey + `/catalog?spp=0&pricemarginCoeff=1.0&reg=0&appType=1&offlineBonus=0&onlineBonus=0&emp=0&locale=ru&lang=ru&curr=rub&count=10&maxPage=10&search=${searchStringEncoded}&${commonData.query}&?xfilters=${encodeURIComponent(commonData.filters)}`;
             // console.log(query);
             let data = await doGetJson(query);

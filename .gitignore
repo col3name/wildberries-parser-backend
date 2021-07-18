@@ -6,3 +6,5 @@ node_modules
 controllers
 wb/
 *.sql
+frontend/
+public1/

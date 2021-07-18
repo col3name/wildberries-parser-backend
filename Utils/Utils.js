@@ -33,5 +33,5 @@ exports.authenticateToken = (req, res, next) => {
 
 exports.checkPassword = (crypt, password, originPassword) => {
     const userPassword = crypt.decrypt(originPassword);
-    return (password !== userPassword);
+    return (password === userPassword);
 }
