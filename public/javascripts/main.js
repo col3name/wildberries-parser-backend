@@ -18,8 +18,6 @@ function drawSearchResults(products, allParameterNames) {
         allParameters.set(name, i);
         i++;
     }
-    // console.log(productsElement);
-    // console.log(html);
     let tableHeadRow = document.createElement('tr');
     tableHeadRow.innerHTML = html;
     productsElement.appendChild(tableHeadRow);
@@ -129,14 +127,9 @@ async function searchProductsOnWildberries(searchString) {
         let products = response.data;
 
         drawSearchResults(products, response.paramNames);
-
-        // let value = JSON.stringify(response.data);
-        let value = JSON.stringify(products);
-        const byteAmount = unescape(encodeURIComponent(value)).length
-        console.log(byteAmount);
         localStorage.setItem('searchTitle', searchString)
         localStorage.setItem('allParameterNames', response.paramNames);
-        localStorage.setItem('productsResult', value);
+        localStorage.setItem('productsResult', JSON.stringify(products));
         return true;
     } catch (err) {
         productsElement.innerHTML = "Ничего не найдено...";
@@ -263,10 +256,7 @@ async function main() {
     const allParameterNames = localStorage.getItem('allParameterNames');
     const searchTitle = localStorage.getItem('searchTitle');
     const searchTitleElement = getElementById('searchTitle');
-    console.log(productsResult);
-    console.log(allParameterNames);
     if (searchTitle !== null && productsResult !== null && productsResult !== undefined && allParameterNames !== null && allParameterNames !== undefined) {
-        // console.log(JSON.parse(productsResult));
         hide(searchFormElement);
         unHide(newSearchButton);
         unHide(searchTitleElement);
@@ -298,7 +288,6 @@ async function main() {
         // e.preventDefault();
         let target = e.target;
         let text = target.innerText;
-        console.log(text);
         let attribute = target.getAttribute('class');
         if (attribute !== null && attribute.includes('keyword')) {
             let copyTextarea = document.querySelector('#clipboard');
