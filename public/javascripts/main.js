@@ -1,20 +1,20 @@
 'use strict';
 
 const RESPONSE_OK = 0;
-const BASE_URL = 'https://wildberries-catalog.herokuapp.com';
-// const BASE_URL = 'http://localhost:3000';
+// const BASE_URL = 'https://wildberries-catalog.herokuapp.com';
+const BASE_URL = 'http://localhost:3000';
 
 function drawSearchResults(products, allParameterNames) {
     let allParameters = new Map();
 
     let i = 0;
-    let productsElement = document.getElementById('products');
+    let productsElement = getElementById('products');
     productsElement.innerHTML = "";
 
     let html = '<th class="table-cell table-header"></th><th class="table-cell table-header">URL</th><th class="table-cell table-header">Цена</th>';
 
     for (let name of allParameterNames) {
-        html += `<th class="table-cell table-header">${name}</th>`;
+        html += `<th class="table-cell table-header">${name.toUpperCase()}</th>`;
         allParameters.set(name, i);
         i++;
     }
@@ -114,7 +114,7 @@ function drawSearchResults(products, allParameterNames) {
 let currentPage = 0;
 
 async function searchProductsOnWildberries(searchString) {
-    let productsElement = document.getElementById('products');
+    let productsElement = getElementById('products');
     try {
         localStorage.removeItem('searchTitle')
         localStorage.removeItem('allParameterNames');
@@ -123,9 +123,9 @@ async function searchProductsOnWildberries(searchString) {
         productsElement.innerHTML = "Идет поиск...";
         let response = await doGet(`/api/search?search=${searchString}`);
         // console.log(response.data);
-        const searchTitleElement = document.getElementById('searchTitle');
-        searchTitleElement.classList.remove('hide');
-        searchTitleElement.innerText = `Результаты поиск «${searchString}»`;
+        const searchTitleElement = getElementById('searchTitle');
+        unHide(searchTitleElement);
+        searchTitleElement.innerText = `Результаты поиск «${capitalizeFirstLetter(searchString)}»`;
         let products = response.data;
 
         drawSearchResults(products, response.paramNames);
@@ -149,15 +149,30 @@ function getBinarySize(string) {
     return Buffer.byteLength(string, 'utf8');
 }
 
+function setSearchSearchTitleText(searchTitleElement, searchTitle) {
+    searchTitleElement.innerText = `Результаты поиск «${capitalizeFirstLetter(searchTitle)}»`;
+}
+
+function unHide(element) {
+    element.classList.remove('hide');
+}
+
+function getElementById(id) {
+    return document.getElementById(id);
+}
+function hide(element) {
+    element.classList.add('hide');
+}
+
 async function main() {
-    let alert = document.getElementById('alert');
+    let alertElement = getElementById('alert');
     const EVENTS_CHANNEL = 'events';
     EventBus.subscribe(EVENTS_CHANNEL, (data) => {
-        alert.classList.add('remove');
-        alert.innerText = data;
+        unHide(alertElement);
+        alertElement.innerText = data;
         setTimeout(() => {
-            alert.classList.add('hide');
-            alert.innerHTML = "";
+            hide(alertElement);
+            alertElement.innerHTML = "";
         }, 5000);
     });
 
@@ -171,45 +186,45 @@ async function main() {
     //     await searchProductsOnWildberries(currentLocation.substr((BASE_URL + '/search?search=').length));
     // }
 
-    // let signUpElement = document.getElementById('signUp');
-    // let signInElement = document.getElementById('signIn');
-    // let logoutElement = document.getElementById('logoutBtn');
-    // let usernameElement = document.getElementById('username');
+    // let signUpElement = getElementById('signUp');
+    // let signInElement = getElementById('signIn');
+    // let logoutElement = getElementById('logoutBtn');
+    // let usernameElement = getElementById('username');
     // const accessToken = getCookie('token');
     //
     // logoutElement.addEventListener('click', (e) => {
     //     e.preventDefault();
     //     eraseCookie('token');
-    //     usernameElement.classList.add('hide');
-    //     signUpElement.classList.remove('hide');
-    //     signInElement.classList.remove('hide');
-    //     logoutElement.classList.add('hide');
+    //         unHide(signUpElement);
+    //         unHide(signInElement);
+    //         hide(usernameElement);
+    //         hide(logoutElement);
     // });
     //
-    // let userFormElement = document.getElementById('userForm');
-    // let actionElement = document.getElementById('action');
+    // let userFormElement = getElementById('userForm');
+    // let actionElement = getElementById('action');
     //
     // signUpElement.addEventListener('click', async (e) => {
     //     e.preventDefault();
     //     actionElement.innerText = 'Sign Up';
     //     userFormElement.setAttribute('data-action', 'signUp');
-    //     userFormElement.classList.remove('hide');
+    //         unHide(userFormElement);
     // });
     //
     // signInElement.addEventListener('click', async (e) => {
     //     e.preventDefault();
     //     actionElement.innerText = 'Sign In';
     //     userFormElement.setAttribute('data-action', 'signIn');
-    //     userFormElement.classList.remove('hide');
+    //       unHide(userFormElement);
     // });
     //
-    // let submitUserFormButton = document.getElementById('submitUserForm');
+    // let submitUserFormButton = getElementById('submitUserForm');
     //
     // submitUserFormButton.addEventListener('click', async (e) => {
     //     e.preventDefault();
     //
-    //     let usernameInput = document.getElementById('usernameInput');
-    //     let passwordInput = document.getElementById('passwordInput');
+    //     let usernameInput = getElementById('usernameInput');
+    //     let passwordInput = getElementById('passwordInput');
     //     const username = usernameInput.value
     //     const config = {
     //         method: 'POST',
@@ -226,11 +241,11 @@ async function main() {
     //         const content = await rawResponse.json();
     //         if (content !== 'failed') {
     //             document.cookie = `token=${content}`;
-    //             usernameElement.classList.remove('hide');
+    //               unHide(usernameElement);
     //             usernameElement.innerText = `Hello ${username}`;
-    //             signUpElement.classList.add('hide');
-    //             signInElement.classList.add('hide');
-    //             logoutElement.classList.remove('hide');
+    //             hide(signUpElement);
+    //             hide(signInElement);
+    //             unHide(logoutElement);
     //         }
     //
     //         // EventBus.publish(EVENTS_CHANNEL, "Success signpu");
@@ -240,46 +255,44 @@ async function main() {
     //     }
     // })
 
-    let searchFormElement = document.getElementById('searchForm');
-    let searchInputElement = document.getElementById('searchInput');
-    let newSearchButton = document.getElementById('newSearch');
-    let productsElement = document.getElementById('products');
+    let searchFormElement = getElementById('searchForm');
+    let searchInputElement = getElementById('searchInput');
+    let newSearchButton = getElementById('newSearch');
+    let productsElement = getElementById('products');
     const productsResult = localStorage.getItem('productsResult');
     const allParameterNames = localStorage.getItem('allParameterNames');
     const searchTitle = localStorage.getItem('searchTitle');
-    const searchTitleElement = document.getElementById('searchTitle');
+    const searchTitleElement = getElementById('searchTitle');
     console.log(productsResult);
     console.log(allParameterNames);
     if (searchTitle !== null && productsResult !== null && productsResult !== undefined && allParameterNames !== null && allParameterNames !== undefined) {
         // console.log(JSON.parse(productsResult));
-        searchFormElement.classList.add('hide');
-        searchTitleElement.classList.add('hide');
-        newSearchButton.classList.remove('hide');
-        searchTitleElement.classList.remove('hide');
-        searchTitleElement.innerText = `Результаты поиск «${searchTitle}»`;
+        hide(searchFormElement);
+        unHide(newSearchButton);
+        unHide(searchTitleElement);
+        setSearchSearchTitleText(searchTitleElement, searchTitle);
         drawSearchResults(JSON.parse(productsResult), allParameterNames.split(','));
     }
 
     searchFormElement.addEventListener('submit', async (e) => {
         e.preventDefault();
         productsElement.innerHTML = "";
-        searchFormElement.classList.add('hide');
-
+        hide(searchFormElement);
         let searchString = searchInputElement.value;
         await searchProductsOnWildberries(searchString);
-        newSearchButton.classList.remove('hide');
+        unHide(newSearchButton);
     });
 
     newSearchButton.addEventListener('click', (e) => {
         e.preventDefault();
-        searchFormElement.classList.remove('hide');
+        unHide(searchFormElement);
         searchInputElement.value = '';
-        searchTitleElement.classList.add('hide');
-        newSearchButton.classList.add('hide');
+        hide(searchTitleElement);
+        hide(newSearchButton);
         productsElement.innerHTML = "";
     });
 
-    const tableElement = document.getElementById('products');
+    const tableElement = getElementById('products');
 
     tableElement.addEventListener('click', function (e) {
         // e.preventDefault();
@@ -308,9 +321,9 @@ async function main() {
 
     // if (accessToken !== undefined) {
     //     const payload = parseJwt(accessToken);
-    //     signUpElement.classList.add('hide');
-    //     signInElement.classList.add('hide');
-    //     logoutElement.classList.remove('hide');
+    //     hide(signInElement);
+    //     hide(signUpElement);
+    //     unHide(logoutElement)
     //     console.log(payload);
     //
     //     console.log(payload.username);
@@ -327,9 +340,9 @@ async function main() {
     //     const content = await rawResponse.text();
     //     console.log(content);
     // } else {
-    //     signUpElement.classList.remove('hide');
-    //     signInElement.classList.remove('hide');
-    //     logoutElement.classList.add('hide');
+    //     unHide(signInElement);
+    //     unHide(signUpElement);
+    //     hide(logoutElement)
     //     console.log("token not found");
     // }
 }
