@@ -1,21 +1,21 @@
 let express = require('express');
 const app = require('../app');
 let router = express.Router();
-const mariadb = require('mariadb');
+// const mariadb = require('mariadb');
 const jwt = require('jsonwebtoken');
 const utils = require('../Utils/Utils');
 const Cryptr = require('cryptr');
 const crypt = new Cryptr("qwerty");
 
 const secret = process.env.TOKEN_SECRET;
-
-const pool = mariadb.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    connectionLimit: 1
-});
+//
+// const pool = mariadb.createPool({
+//     host: process.env.DB_HOST,
+//     user: process.env.DB_USER,
+//     password: process.env.DB_PASSWORD,
+//     database: process.env.DB_NAME,
+//     connectionLimit: 1
+// });
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
@@ -37,11 +37,11 @@ router.get('/:ID', utils.authenticateToken, function (req, res, next) {
     res.render('special');
 });
 
-router.get('/download', function (req, res) {
-    console.log(__dirname);
-    // res.send(__dirname);
-    res.download(`${__dirname}/index.js`);
-})
+// router.get('/download', function (req, res) {
+//     console.log(__dirname);
+//     // res.send(__dirname);
+//     res.download(`${__dirname}/index.js`);
+// })
 
 router.post('/signIn', async function (req, res, next) {
     const { username, password } = req.body;
