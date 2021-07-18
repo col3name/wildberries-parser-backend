@@ -1,6 +1,6 @@
 const env = process.env;
 const pg = require('pg');
-// pg.defaults.ssl = true;
+pg.defaults.ssl = true;
 
 exports.getDbPool = () => {
     return new pg.Pool({
@@ -9,8 +9,8 @@ exports.getDbPool = () => {
         user: env.DB_USER || 'postgres',
         password: env.DB_PASSWORD || 'postgres',
         database: env.DB_NAME || 'wildberries',
-        // ssl: {
-        //     rejectUnauthorized: false
-        // }
+        ssl: {
+            rejectUnauthorized: false
+        }
     })
 };
