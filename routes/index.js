@@ -115,9 +115,9 @@ router.get('/api/search', async function (req, res) {
             console.log(data);
 
             try {
-                const connection = await client.connect();
+                await client.connect();
                 try {
-                    const result = await connection.query(sql, data);
+                    const result = await client.query(sql, data);
                     console.log(result.rows[0]);
                     res.json({
                         "code": code,
@@ -130,7 +130,7 @@ router.get('/api/search', async function (req, res) {
                     console.log(err);
                     res.status(409)
                 } finally {
-                    connection.release()
+                    client.end();
                 }
             } catch (err) {
                 console.log('pool');
