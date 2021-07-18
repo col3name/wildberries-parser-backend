@@ -2,7 +2,9 @@ let express = require('express');
 let router = express.Router();
 const axios = require('axios').default;
 const cheerio = require('cheerio');
-const pool = require('config');
+const config = require('../config');
+const pool = config.db;
+// ('config.js');
 // config.db
 // const mariadb = require('mariadb');
 //

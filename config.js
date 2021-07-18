@@ -2,7 +2,7 @@ const env = process.env;
 const pg = require('pg');
 pg.defaults.ssl = true;
 
-export const config = {
+exports.config = {
     db: new pg.Pool({
         host: env.DB_HOST || 'localhost',
         port: env.DB_PORT || '5432',
