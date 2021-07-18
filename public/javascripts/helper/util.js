@@ -6,18 +6,11 @@ const getCookie = (cookieName) => {
     return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
-const parseJwt = (token) => {
-    try {
-        return JSON.parse(atob(token.split('.')[1]));
-    } catch (e) {
-        return null;
-    }
-};
+const setCookie = (name, value, days = 2) => {
 
-const setCookie = (name, value, days) => {
-    var expires = "";
+    let expires = "";
     if (days) {
-        var date = new Date();
+        const date = new Date();
         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
         expires = "; expires=" + date.toUTCString();
     }
@@ -27,3 +20,11 @@ const setCookie = (name, value, days) => {
 const eraseCookie = (name) => {
     document.cookie = name + '=; Max-Age=-99999999;';
 }
+
+const parseJwt = (token) => {
+    try {
+        return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+        return null;
+    }
+};

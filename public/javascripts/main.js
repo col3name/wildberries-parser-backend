@@ -1,13 +1,11 @@
 'use strict';
 
 const RESPONSE_OK = 0;
-const BASE_URL = 'https://wildberries-catalog.herokuapp.com';
-// const BASE_URL = 'http://localhost:3000';
+// const BASE_URL = 'https://wildberries-catalog.herokuapp.com';
+const BASE_URL = 'http://localhost:3000';
 
 function drawSearchResults(products, allParameterNames) {
     let allParameters = new Map();
-
-    console.log(allParameterNames);
 
     let i = 0;
     let productsElement = document.getElementById('products');
@@ -55,7 +53,7 @@ function drawSearchResults(products, allParameterNames) {
         row.push(product.salePriceU);
         for (let name of allParameters.keys()) {
             let value = productParamMap.get(name);
-            console.log(value);
+            // console.log(value);
             if (value === undefined) {
                 row.push('-');
             } else {
@@ -81,7 +79,7 @@ function drawSearchResults(products, allParameterNames) {
                 for (let keyword of keywords) {
                     const key = keyword.toLowerCase().trim();
                     let count = keywordMap.get(key);
-                    console.log('count');
+                    // console.log('count');
                     // console.log(key);
                     // console.log(count);
                     if (count === undefined || count <= 1 || (count > 1 && keyword.includes(' шт.'))) {
@@ -113,42 +111,33 @@ function drawSearchResults(products, allParameterNames) {
     });
 }
 
-async function handlePagination(EVENTS_CHANNEL, page = 0, limit = 10) {
-    try {
-        let response = await doGet(`/products?page=${page}&limit=${limit}`);
-        console.log(response);
-        if (!response.hasOwnProperty('code') && response.code !== RESPONSE_OK
-            || !response.hasOwnProperty('data') || !response.hasOwnProperty('countPage')
-        ) {
-            EventBus.publish(EVENTS_CHANNEL, "invalid response");
-        } else {
-            drawSearchResults(response.data, []);
-            return response.countPage;
-        }
-    } catch (err) {
-        EventBus.publish(EVENTS_CHANNEL, "Err " + err);
-
-        console.log(err);
-    }
-
-    return -1;
-}
-
 let currentPage = 0;
 
 async function searchProductsOnWildberries(searchString) {
     let productsElement = document.getElementById('products');
     try {
+        localStorage.clear();
         productsElement.innerHTML = "Идет поиск...";
         let response = await doGet(`/api/search?search=${searchString}`);
-        console.log(response.data);
-        drawSearchResults(response.data, response.paramNames);
+        // console.log(response.data);
+
+        let products = response.data;
+        drawSearchResults(products, response.paramNames);
+        // let value = JSON.stringify(response.data);
+        let value = JSON.stringify(products);
+        const byteAmount = unescape(encodeURIComponent(value)).length
+        console.log(byteAmount);
+        localStorage.setItem('allParameterNames', response.paramNames);
+        localStorage.setItem('productsResult', value);
         return true;
     } catch (err) {
         productsElement.innerHTML = "Ничего не найдено...";
         console.log(err);
         return false;
     }
+}
+function getBinarySize(string) {
+    return Buffer.byteLength(string, 'utf8');
 }
 
 async function main() {
@@ -163,88 +152,100 @@ async function main() {
         }, 5000);
     });
 
+
     const currentLocation = document.location.href;
     console.log("curr" + currentLocation);
 
-    let includes = currentLocation.includes(BASE_URL + '/search?search=');
-    console.log(includes);
-    if (includes) {
-        await searchProductsOnWildberries(currentLocation.substr((BASE_URL + '/search?search=').length));
-    }
+    // let includes = currentLocation.includes(BASE_URL + '/search?search=');
+    // console.log(includes);
+    // if (includes) {
+    //     await searchProductsOnWildberries(currentLocation.substr((BASE_URL + '/search?search=').length));
+    // }
 
-    let signUpElement = document.getElementById('signUp');
-    let signInElement = document.getElementById('signIn');
-    let logoutElement = document.getElementById('logoutBtn');
-    let usernameElement = document.getElementById('username');
-    const accessToken = getCookie('token');
-
-    logoutElement.addEventListener('click', (e) => {
-        e.preventDefault();
-        eraseCookie('token');
-        usernameElement.classList.add('hide');
-        signUpElement.classList.remove('hide');
-        signInElement.classList.remove('hide');
-        logoutElement.classList.add('hide');
-    })
-
-    let userFormElement = document.getElementById('userForm');
-    let actionElement = document.getElementById('action');
-
-    signUpElement.addEventListener('click', async (e) => {
-        e.preventDefault();
-        actionElement.innerText = 'Sign Up';
-        userFormElement.setAttribute('data-action', 'signUp');
-        userFormElement.classList.remove('hide');
-    });
-
-    signInElement.addEventListener('click', async (e) => {
-        e.preventDefault();
-        actionElement.innerText = 'Sign In';
-        userFormElement.setAttribute('data-action', 'signIn');
-        userFormElement.classList.remove('hide');
-    });
-
-    let submitUserFormButton = document.getElementById('submitUserForm');
-
-    submitUserFormButton.addEventListener('click', async (e) => {
-        e.preventDefault();
-
-        let usernameInput = document.getElementById('usernameInput');
-        let passwordInput = document.getElementById('passwordInput');
-        const username = usernameInput.value
-        const config = {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({username: username, password: passwordInput.value})
-        };
-        try {
-            const action = userFormElement.getAttribute('data-action');
-
-            const rawResponse = await fetch(`${BASE_URL}/users/${action}`, config);
-            const content = await rawResponse.json();
-            if (content !== 'failed') {
-                document.cookie = `token=${content}`;
-                usernameElement.classList.remove('hide');
-                usernameElement.innerText = `Hello ${username}`;
-                signUpElement.classList.add('hide');
-                signInElement.classList.add('hide');
-                logoutElement.classList.remove('hide');
-            }
-
-            // EventBus.publish(EVENTS_CHANNEL, "Success signpu");
-        } catch (err) {
-            console.log(err);
-            // EventBus.publish(EVENTS_CHANNEL, "Failed signup");
-        }
-    })
+    // let signUpElement = document.getElementById('signUp');
+    // let signInElement = document.getElementById('signIn');
+    // let logoutElement = document.getElementById('logoutBtn');
+    // let usernameElement = document.getElementById('username');
+    // const accessToken = getCookie('token');
+    //
+    // logoutElement.addEventListener('click', (e) => {
+    //     e.preventDefault();
+    //     eraseCookie('token');
+    //     usernameElement.classList.add('hide');
+    //     signUpElement.classList.remove('hide');
+    //     signInElement.classList.remove('hide');
+    //     logoutElement.classList.add('hide');
+    // });
+    //
+    // let userFormElement = document.getElementById('userForm');
+    // let actionElement = document.getElementById('action');
+    //
+    // signUpElement.addEventListener('click', async (e) => {
+    //     e.preventDefault();
+    //     actionElement.innerText = 'Sign Up';
+    //     userFormElement.setAttribute('data-action', 'signUp');
+    //     userFormElement.classList.remove('hide');
+    // });
+    //
+    // signInElement.addEventListener('click', async (e) => {
+    //     e.preventDefault();
+    //     actionElement.innerText = 'Sign In';
+    //     userFormElement.setAttribute('data-action', 'signIn');
+    //     userFormElement.classList.remove('hide');
+    // });
+    //
+    // let submitUserFormButton = document.getElementById('submitUserForm');
+    //
+    // submitUserFormButton.addEventListener('click', async (e) => {
+    //     e.preventDefault();
+    //
+    //     let usernameInput = document.getElementById('usernameInput');
+    //     let passwordInput = document.getElementById('passwordInput');
+    //     const username = usernameInput.value
+    //     const config = {
+    //         method: 'POST',
+    //         headers: {
+    //             'Accept': 'application/json',
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify({username: username, password: passwordInput.value})
+    //     };
+    //     try {
+    //         const action = userFormElement.getAttribute('data-action');
+    //
+    //         const rawResponse = await fetch(`${BASE_URL}/users/${action}`, config);
+    //         const content = await rawResponse.json();
+    //         if (content !== 'failed') {
+    //             document.cookie = `token=${content}`;
+    //             usernameElement.classList.remove('hide');
+    //             usernameElement.innerText = `Hello ${username}`;
+    //             signUpElement.classList.add('hide');
+    //             signInElement.classList.add('hide');
+    //             logoutElement.classList.remove('hide');
+    //         }
+    //
+    //         // EventBus.publish(EVENTS_CHANNEL, "Success signpu");
+    //     } catch (err) {
+    //         console.log(err);
+    //         // EventBus.publish(EVENTS_CHANNEL, "Failed signup");
+    //     }
+    // })
 
     let searchFormElement = document.getElementById('searchForm');
     let searchInputElement = document.getElementById('searchInput');
     let newSearchButton = document.getElementById('newSearch');
     let productsElement = document.getElementById('products');
+    const productsResult = localStorage.getItem('productsResult');
+    const allParameterNames = localStorage.getItem('allParameterNames');
+    console.log(productsResult);
+    console.log(allParameterNames);
+    if (productsResult !== null && productsResult !== undefined && allParameterNames !== null && allParameterNames !== undefined) {
+        // console.log(JSON.parse(productsResult));
+        searchFormElement.classList.add('hide');
+        newSearchButton.classList.remove('hide');
+        drawSearchResults(JSON.parse(productsResult), allParameterNames.split(','));
+    }
+
     searchFormElement.addEventListener('submit', async (e) => {
         e.preventDefault();
         productsElement.innerHTML = "";
@@ -275,8 +276,8 @@ async function main() {
             let copyTextarea = document.querySelector('#clipboard');
             copyTextarea.value = text;
             copyTextarea.style.position = 'fixed';
-            copyTextarea.style.bottom= 0;
-            copyTextarea.style.left= 0;
+            copyTextarea.style.bottom = 0;
+            copyTextarea.style.left = 0;
             copyTextarea.focus();
             copyTextarea.select();
 
@@ -290,39 +291,42 @@ async function main() {
         }
     }, false);
 
-    if (accessToken !== undefined) {
-        const payload = parseJwt(accessToken);
-        signUpElement.classList.add('hide');
-        signInElement.classList.add('hide');
-        logoutElement.classList.remove('hide');
-        console.log(payload);
-
-        console.log(payload.username);
-        usernameElement.innerText = `Hello ${payload.username}`;
-
-        const rawResponse = await fetch(`${BASE_URL}/users/1`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${accessToken}`,
-            },
-        });
-
-        const content = await rawResponse.text();
-        console.log(content);
-    } else {
-        signUpElement.classList.remove('hide');
-        signInElement.classList.remove('hide');
-        logoutElement.classList.add('hide');
-        console.log("token not found");
-    }
+    // if (accessToken !== undefined) {
+    //     const payload = parseJwt(accessToken);
+    //     signUpElement.classList.add('hide');
+    //     signInElement.classList.add('hide');
+    //     logoutElement.classList.remove('hide');
+    //     console.log(payload);
+    //
+    //     console.log(payload.username);
+    //     usernameElement.innerText = `Hello ${payload.username}`;
+    //
+    //     const rawResponse = await fetch(`${BASE_URL}/users/1`, {
+    //         method: 'GET',
+    //         headers: {
+    //             'Accept': 'application/json',
+    //             'Authorization': `Bearer ${accessToken}`,
+    //         },
+    //     });
+    //
+    //     const content = await rawResponse.text();
+    //     console.log(content);
+    // } else {
+    //     signUpElement.classList.remove('hide');
+    //     signInElement.classList.remove('hide');
+    //     logoutElement.classList.add('hide');
+    //     console.log("token not found");
+    // }
 }
 
 async function doGet(path) {
     const response = await fetch(`${BASE_URL}${path}`);
     return await response.json();
 }
-
-window.addEventListener('load', async () => {
+(async  function () {
     await main();
-});
+}());
+//
+// window.addEventListener('load', async () => {
+//     await main();
+// });

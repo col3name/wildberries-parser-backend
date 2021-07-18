@@ -10,7 +10,7 @@ exports.isset = (...arguments) => {
 }
 
 exports.generateAccessToken = (username) => {
-    return jwt.sign({ username: username }, process.env.TOKEN_SECRET, { expiresIn: '1800s' });
+    return jwt.sign({username: username}, process.env.TOKEN_SECRET, {expiresIn: '1800s'});
 }
 
 exports.authenticateToken = (req, res, next) => {

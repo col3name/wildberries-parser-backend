@@ -52,3 +52,22 @@ a {
 th {
 
 }
+
+.btn {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 0 1rem 0;
+  padding: .85em 1em;
+  border: 1px solid transparent;
+  -webkit-transition: background-color .25s ease-out,color .25s ease-out;
+  transition: background-color .25s ease-out,color .25s ease-out;
+  font-family: inherit;
+  font-size: .9rem;
+  -webkit-appearance: none;
+  line-height: 1;
+  text-align: center;
+  cursor: pointer;
+  color: #ffffff;
+  border-radius: 17px;
+  background-color: #5d5fef;
+}
