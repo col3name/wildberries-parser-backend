@@ -62,6 +62,7 @@ router.get('/api/search', async function (req, res) {
 
                 product['parameters'] = newVar.parameters;
                 product['image'] = newVar.image;
+                product['name'] = newVar.name;
                 data.push(product.id);
                 data.push(product.name);
                 data.push(JSON.stringify(product.parameters));
@@ -141,9 +142,11 @@ async function parseDetails(productId) {
     const result = {
         parameters: [],
         image: '',
+        name: '',
     };
 
     result.image = 'https:' + $('#imageContainer > div > img.photo-zoom__preview.j-zoom-preview').attr('src');
+    result.name = $('#container > div.product-detail__same-part-kt.same-part-kt > div > div.same-part-kt__header-wrap > h1').text();
     // console.log(img);
 
     $('.product-params__table > tbody > tr.product-params__row').each(function (i, e) {
