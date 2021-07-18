@@ -143,9 +143,11 @@ async function searchProductsOnWildberries(searchString) {
         let response = await doGet(`/api/search?search=${searchString}`);
         console.log(response.data);
         drawSearchResults(response.data, response.paramNames);
+        return true;
     } catch (err) {
         productsElement.innerHTML = "Ничего не найдено...";
         console.log(err);
+        return false;
     }
 }
 
@@ -241,15 +243,30 @@ async function main() {
 
     let searchFormElement = document.getElementById('searchForm');
     let searchInputElement = document.getElementById('searchInput');
+    let newSearchButton = document.getElementById('newSearch');
+    let productsElement = document.getElementById('products');
     searchFormElement.addEventListener('submit', async (e) => {
         e.preventDefault();
-        let productsElement = document.getElementById('products');
         productsElement.innerHTML = "";
+        searchFormElement.classList.add('hide');
+
         let searchString = searchInputElement.value;
         await searchProductsOnWildberries(searchString);
+        newSearchButton.classList.remove('hide');
     });
 
-    document.addEventListener('click', function (e) {
+    newSearchButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        searchFormElement.classList.remove('hide');
+        searchInputElement.value = '';
+        newSearchButton.classList.add('hide');
+        productsElement.innerHTML = "";
+    });
+
+    const tableElement = document.getElementById('products');
+
+    tableElement.addEventListener('click', function (e) {
+        // e.preventDefault();
         let target = e.target;
         let text = target.innerText;
         console.log(text);
@@ -257,6 +274,9 @@ async function main() {
         if (attribute !== null && attribute.includes('keyword')) {
             let copyTextarea = document.querySelector('#clipboard');
             copyTextarea.value = text;
+            copyTextarea.style.position = 'fixed';
+            copyTextarea.style.bottom= 0;
+            copyTextarea.style.left= 0;
             copyTextarea.focus();
             copyTextarea.select();
 
