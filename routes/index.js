@@ -28,7 +28,17 @@ const pg = require('pg');
 //     database: env.DB_NAME || 'wildberries',
 // });
 pg.defaults.ssl = true;
-const client = new pg.Client({
+// const client = new pg.Client({
+//     host: env.DB_HOST || 'localhost',
+//     port: env.DB_PORT || '5432',
+//     user: env.DB_USER || 'postgres',
+//     password: env.DB_PASSWORD || 'postgres',
+//     database: env.DB_NAME || 'wildberries',
+//     ssl: {
+//         rejectUnauthorized: false
+//     }
+// });
+const pool = new pg.Pool({
     host: env.DB_HOST || 'localhost',
     port: env.DB_PORT || '5432',
     user: env.DB_USER || 'postgres',
@@ -38,8 +48,6 @@ const client = new pg.Client({
         rejectUnauthorized: false
     }
 });
-await client.connect();
-
 router.get('/', function (req, res, next) {
     res.render('index', {title: 'Express'});
 });
@@ -117,7 +125,7 @@ router.get('/api/search', async function (req, res) {
 
             try {
                 try {
-                    const result = await client.query(sql, data);
+                    const result = await pool.query(sql, data);
                     console.log(result.rows[0]);
                     res.json({
                         "code": code,
