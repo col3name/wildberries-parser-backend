@@ -4,7 +4,6 @@ const RESPONSE_OK = 0;
 const BASE_URL = 'https://wildberries-catalog.herokuapp.com';
 // const BASE_URL = 'http://localhost:3000';
 
-
 function drawProducts(products, allParameterNames) {
     let allParameters = new Map();
 
