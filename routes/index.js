@@ -4,53 +4,7 @@ const axios = require('axios').default;
 const cheerio = require('cheerio');
 const config = require('../config');
 const pool = config.getDbPool();
-// const pool = config.db;
-// ('config.js');
-// config.db
-// const mariadb = require('mariadb');
-//
-// const pool = mariadb.createPool({
-//     host: process.env.DB_HOST,
-//     user: process.env.DB_USER,
-//     password: process.env.DB_PASSWORD,
-//     database: process.env.DB_NAME,
-//     connectionLimit: 8
-// });
 
-// const pool = new Pool({
-//     // host: 'localhost',
-//     // user: 'postgres',
-//     // password: 'postgres',
-//     // database: 'wildberries',
-//     // port: 5432,
-//     host: env.DB_HOST || 'localhost',
-//     port: env.DB_PORT || '5432',
-//     user: env.DB_USER || 'postgres',
-//     password: env.DB_PASSWORD || 'postgres',
-//     database: env.DB_NAME || 'wildberries',
-// });
-// const client = new pg.Client({
-//     host: env.DB_HOST || 'localhost',
-//     port: env.DB_PORT || '5432',
-//     user: env.DB_USER || 'postgres',
-//     password: env.DB_PASSWORD || 'postgres',
-//     database: env.DB_NAME || 'wildberries',
-//     ssl: {
-//         rejectUnauthorized: false
-//     }
-// });
-// const db = {
-//     host: env.DB_HOST || 'localhost',
-//     port: env.DB_PORT || '5432',
-//     user: env.DB_USER || 'postgres',
-//     password: env.DB_PASSWORD || 'postgres',
-//     database: env.DB_NAME || 'wildberries',
-//     ssl: {
-//         rejectUnauthorized: false
-//     }
-// };
-// pg.defaults.ssl = true;
-// const pool = new pg.Pool(db);
 router.get('/', function (req, res, next) {
     res.render('index', {title: 'Express'});
 });
@@ -188,6 +142,7 @@ async function searchOnCatalog(searchString, limit = 5) {
         const searchStringEncoded = encodeURIComponent(searchString);
         const commonUrl = 'https://wbxsearch.wildberries.ru/exactmatch/v2/common?query=' + searchStringEncoded;
         const commonData = await doGetJson(commonUrl);
+        console.log(commonData);
         let query = 'https://wbxcatalog-ru.wildberries.ru/';
         if (commonData.hasOwnProperty('shardKey') && commonData.hasOwnProperty('query') && commonData.hasOwnProperty('filters')) {
             query += commonData.shardKey + `/catalog?spp=0&pricemarginCoeff=1.0&reg=0&appType=1&offlineBonus=0&onlineBonus=0&emp=0&locale=ru&lang=ru&curr=rub&count=10&maxPage=10&search=${searchStringEncoded}&${commonData.query}&?xfilters=${encodeURIComponent(commonData.filters)}`;
