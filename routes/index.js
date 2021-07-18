@@ -151,7 +151,8 @@ async function parseDetails(productId) {
 
     $('.product-params__table > tbody > tr.product-params__row').each(function (i, e) {
         const name = $(this).find('th').text().trim();
-        const newLocal = !name.includes('Высота') && !name.includes('Ширина') && !name.includes('Глубина') && !name.includes('упаковк');
+        let lowerCase = name.toLowerCase();
+        const newLocal = !lowerCase.includes('высота') && !lowerCase.includes('ширина') && !lowerCase.includes('глубина') && !lowerCase.includes('упаковк');
         if (newLocal === true) {
             result.parameters.push({
                 name: name,
