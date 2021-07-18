@@ -127,7 +127,7 @@ router.get('/api/search', async function (req, res) {
                     console.log(err);
                     res.status(409)
                 } finally {
-                    client.release()
+                    connection.release()
                 }
             } catch (err) {
                 console.log('pool');
