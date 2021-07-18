@@ -111,9 +111,9 @@ router.get('/api/search', async function (req, res) {
             console.log(data);
 
             try {
-                const client = await client.connect();
+                const connection = await client.connect();
                 try {
-                    const result = await client.query(sql, data);
+                    const result = await connection.query(sql, data);
                     console.log(result.rows[0]);
                     res.json({
                         "code": code,
