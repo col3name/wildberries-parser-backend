@@ -1,8 +1,8 @@
 'use strict';
 
 const RESPONSE_OK = 0;
-const BASE_URL = 'https://wildberries-catalog.herokuapp.com';
-// const BASE_URL = 'http://localhost:3000';
+// const BASE_URL = 'https://wildberries-catalog.herokuapp.com';
+const BASE_URL = 'http://localhost:3000';
 
 function drawProducts(products, allParameterNames) {
     let allParameters = new Map();
@@ -123,6 +123,16 @@ async function handlePagination(EVENTS_CHANNEL, page = 0, limit = 10) {
 
 let currentPage = 0;
 
+async function searchProductsOnWildberries(searchString) {
+    try {
+        let response = await doGet(`/api/search?search=${searchString}`);
+        console.log(response.data);
+        drawProducts(response.data, response.paramNames);
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 async function main() {
     let alert = document.getElementById('alert');
     const EVENTS_CHANNEL = 'events';
@@ -134,6 +144,15 @@ async function main() {
             alert.innerHTML = "";
         }, 5000);
     });
+
+    const currentLocation = document.location.href;
+    console.log("curr" +currentLocation);
+
+    let includes = currentLocation.includes(BASE_URL + '/search?search=');
+    console.log(includes);
+    if (includes) {
+       await searchProductsOnWildberries(currentLocation.substr((BASE_URL + '/search?search=').length));
+    }
 
     let signUpElement = document.getElementById('signUp');
     let signInElement = document.getElementById('signIn');
@@ -237,13 +256,7 @@ async function main() {
     searchFormElement.addEventListener('submit', async (e) => {
         e.preventDefault();
         let searchString = searchInputElement.value;
-        try {
-            let response = await doGet(`/search?search=${searchString}`);
-            console.log(response.data);
-            drawProducts(response.data, response.paramNames);
-        } catch (err) {
-            console.log(err);
-        }
+        await searchProductsOnWildberries(searchString);
     });
 
     document.addEventListener('click', function (e) {
