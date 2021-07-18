@@ -13,14 +13,21 @@ const cheerio = require('cheerio');
 // });
 const env = process.env;
 
-const {Pool} = require('pg');
+const {Client } = require('pg');
 
-const pool = new Pool({
-    // host: 'localhost',
-    // user: 'postgres',
-    // password: 'postgres',
-    // database: 'wildberries',
-    // port: 5432,
+// const pool = new Pool({
+//     // host: 'localhost',
+//     // user: 'postgres',
+//     // password: 'postgres',
+//     // database: 'wildberries',
+//     // port: 5432,
+//     host: env.DB_HOST || 'localhost',
+//     port: env.DB_PORT || '5432',
+//     user: env.DB_USER || 'postgres',
+//     password: env.DB_PASSWORD || 'postgres',
+//     database: env.DB_NAME || 'wildberries',
+// });
+const client = new Client({
     host: env.DB_HOST || 'localhost',
     port: env.DB_PORT || '5432',
     user: env.DB_USER || 'postgres',
@@ -104,7 +111,7 @@ router.get('/api/search', async function (req, res) {
             console.log(data);
 
             try {
-                const client = await pool.connect();
+                const client = await client.connect();
                 try {
                     const result = await client.query(sql, data);
                     console.log(result.rows[0]);
